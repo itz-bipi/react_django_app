@@ -1,38 +1,88 @@
-pipeline{
-    agent any
-    stages{
-        stage('checkout'){
-            steps{
-                echo 'this is clone the project'
-            }
-        }
-        stage('build'){
-            steps{
-                echo 'this is buiild the image from the docker file'
-            }
-        }
-        stage('push'){
-            steps{
-                echo 'this is push the image to the docker hub!'
-            }
-        }
-        stage('deploy'){
-            steps{
-                echo 'this is deploy the application!'
-            }
-        }
+pipeline {
 
+    agent any
+
+    environment {
+        APP_NAME = "react-django-app"
     }
 
-    post{
-        sucess{
-            echo 'Deployment of APP is sucessfull'
+    stages {
+        stage('Verify Environment') {
+            steps {
+                echo 'Checking Jenkins environment...'
+
+                sh '''
+                    whoami
+                    docker --version
+                    docker compose version
+                '''
+            }
         }
-        failure{
-            echo 'deployment of app is failed'
+
+        stage('Validate Docker Compose') {
+            steps {
+                echo 'Validating Docker Compose configuration...'
+
+                sh '''
+                    docker compose config
+                '''
+            }
         }
-        always{
-            echo 'jenkins pipeline execution sucessfully completed'
+
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker image...'
+
+                sh '''
+                    docker compose build
+                '''
+            }
+        }
+
+        stage('Test Application') {
+            steps {
+                echo 'Running Django tests...'
+
+                sh '''
+                    docker compose run --rm web python manage.py test
+                '''
+            }
+        }
+
+        stage('Deploy Application') {
+            steps {
+                echo 'Deploying application...'
+
+                sh '''
+                    docker compose down
+                    docker compose up -d
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                echo 'Checking running containers...'
+
+                sh '''
+                    docker compose ps
+                '''
+            }
+        }
+    }
+
+    post {
+
+        success {
+            echo "Deployment of ${APP_NAME} completed successfully!"
+        }
+
+        failure {
+            echo "Deployment of ${APP_NAME} failed!"
+        }
+
+        always {
+            echo "Jenkins Pipeline execution completed."
         }
     }
 }
