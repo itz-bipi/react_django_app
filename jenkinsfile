@@ -1,0 +1,38 @@
+pipeline{
+    agent any
+    stages{
+        stage('checkout'){
+            steps{
+                echo 'this is clone the project'
+            }
+        }
+        stage('build'){
+            steps{
+                echo 'this is buiild the image from the docker file'
+            }
+        }
+        stage('push'){
+            steps{
+                echo 'this is push the image to the docker hub!'
+            }
+        }
+        stage('deploy'){
+            steps{
+                echo 'this is deploy the application!'
+            }
+        }
+
+    }
+
+    post{
+        sucess{
+            echo 'Deployment of APP is sucessfull'
+        }
+        failure{
+            echo 'deployment of app is failed'
+        }
+        always{
+            echo 'jenkins pipeline execution sucessfully completed'
+        }
+    }
+}
