@@ -4,9 +4,11 @@ pipeline {
 
     environment {
         APP_NAME = "react-django-app"
+        COMPOSE_PROJECT_NAME = "react-django-app"
     }
 
     stages {
+
         stage('Verify Environment') {
             steps {
                 echo 'Checking Jenkins environment...'
