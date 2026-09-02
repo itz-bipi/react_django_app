@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME = "react-django-app"
+        APP_NAME = "react-django-pipeline"
     }
 
     stages {
